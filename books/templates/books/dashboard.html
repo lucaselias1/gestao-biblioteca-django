@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="bi bi-speedometer2"></i> Painel de Controle</h2>
+
+    <div class="row">
+        <!-- Card Total de Livros -->
+        <div class="col-md-3">
+            <div class="card bg-primary text-white shadow-sm mb-4">
+                <div class="card-body">
+                    <h6 class="card-title">Total de Títulos</h6>
+                    <h2 class="display-4 fw-bold">{{ total_livros }}</h2>
+                    <i class="bi bi-book fs-1 opacity-50 position-absolute top-0 end-0 m-3"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Empréstimos Ativos -->
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark shadow-sm mb-4">
+                <div class="card-body">
+                    <h6 class="card-title">Empréstimos Ativos</h6>
+                    <h2 class="display-4 fw-bold">{{ emprestimos_ativos }}</h2>
+                    <i class="bi bi-journal-arrow-up fs-1 opacity-50 position-absolute top-0 end-0 m-3"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Livros Atrasados -->
+        <div class="col-md-3">
+            <div class="card bg-danger text-white shadow-sm mb-4">
+                <div class="card-body">
+                    <h6 class="card-title">Livros em Atraso</h6>
+                    <h2 class="display-4 fw-bold">{{ livros_atrasados }}</h2>
+                    <i class="bi bi-exclamation-triangle fs-1 opacity-50 position-absolute top-0 end-0 m-3"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Total Exemplares -->
+        <div class="col-md-3">
+            <div class="card bg-success text-white shadow-sm mb-4">
+                <div class="card-body">
+                    <h6 class="card-title">Total de Exemplares</h6>
+                    <h2 class="display-4 fw-bold">{{ total_exemplares }}</h2>
+                    <i class="bi bi-layers fs-1 opacity-50 position-absolute top-0 end-0 m-3"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header">Acesso Rápido</div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'loan_create' %}" class="btn btn-outline-primary btn-lg">Novo Empréstimo</a>
+                        <a href="{% url 'book_list' %}" class="btn btn-outline-secondary">Gerenciar Acervo</a>
+                        <a href="{% url 'loan_list' %}?status=open" class="btn btn-outline-warning">Ver Pendências</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

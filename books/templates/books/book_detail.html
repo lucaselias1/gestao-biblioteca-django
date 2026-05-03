@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Coluna da Esquerda: Info Principal -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h2 class="card-title">{{ book.title }}</h2>
+                    <p class="text-muted">ISBN: {{ book.isbn }}</p>
+                    <hr>
+                    <div class="d-grid gap-2">
+                        {% if book.available_quantity > 0 %}
+                            <span class="badge bg-success p-2">Disponível ({{ book.available_quantity }})</span>
+                            <a href="{% url 'loan_create' %}" class="btn btn-primary">Emprestar este Livro</a>
+                        {% else %}
+                            <span class="badge bg-danger p-2">Indisponível no Momento</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna da Direita: Detalhes Técnicos -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Informações Técnicas</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Autor:</strong> {{ book.author }}</li>
+                        <li class="list-group-item"><strong>Data de Publicação:</strong> {{ book.published_date|date:"d/m/Y" }}</li>
+                        <li class="list-group-item"><strong>Quantidade Total:</strong> {{ book.total_quantity }} exemplares</li>
+                        <li class="list-group-item">
+                            <p class="mt-2">
+                              <strong>Sinopse:</strong><br>
+                               {{ book.synopsis|default:"Texto da sinopse não encontrado no banco." }}
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'book_list' %}" class="btn btn-outline-secondary">Voltar para a Lista</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

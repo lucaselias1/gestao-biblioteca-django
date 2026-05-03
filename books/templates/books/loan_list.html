@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-journal-check"></i> Histórico de Empréstimos</h2>
+        <a href="{% url 'loan_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Novo Empréstimo
+        </a>
+    </div>
+
+    <!-- Seção de Busca e Filtros -->
+    <div class="row mb-4 align-items-end">
+        <div class="col-md-5">
+            <form method="GET" action="{% url 'loan_list' %}" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Buscar por usuário ou livro..."
+                    value="{{ request.GET.search }}">
+                <input type="hidden" name="status" value="{{ request.GET.status|default:'' }}">
+                <button class="btn btn-dark" type="submit">
+                    <i class="bi bi-search"></i> Buscar
+                </button>
+            </form>
+        </div>
+
+        <div class="col-md-7 text-md-end mt-3 mt-md-0">
+            <div class="btn-group" role="group">
+                <a href="?status=all&search={{ request.GET.search|default:'' }}"
+                    class="btn btn-outline-secondary {% if request.GET.status == 'all' %}active{% endif %}">Todos</a>
+                <a href="?status=open&search={{ request.GET.search|default:'' }}"
+                    class="btn btn-outline-warning {% if request.GET.status == 'open' or not request.GET.status %}active{% endif %}">Em Aberto</a>
+                <a href="?status=delayed&search={{ request.GET.search|default:'' }}" 
+                    class="btn btn-outline-danger {% if request.GET.status == 'delayed' %}active{% endif %}">Em Atraso</a>
+                <a href="?status=closed&search={{ request.GET.search|default:'' }}"
+                    class="btn btn-outline-success {% if request.GET.status == 'closed' %}active{% endif %}">Devolvidos</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Livro</th>
+                        <th>Usuário</th>
+                        <th>Empréstimo</th>
+                        <th>Prazo</th>
+                        <th>Status</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loan in object_list %}
+                    
+                    {# A lógica de atraso repetida para evitar erro de tag customizada #}
+                    <tr class="{% if not loan.actual_return_date and loan.return_deadline|date:'Ymd' < agora|date:'Ymd' %}table-danger{% endif %}">
+                        <td class="fw-bold">{{ loan.book.title }}</td>
+                        <td>
+                            <div class="fw-bold">{{ loan.user.username }}</div>
+                            {% if loan.user.profile.phone %}
+                                <small class="text-muted"><i class="bi bi-whatsapp"></i> {{ loan.user.profile.phone }}</small>
+                                {% if not loan.actual_return_date %}
+                                    <br><a href="https://wa.me/{{ loan.user.profile.phone }}?text=Livro%20atrasado:%20{{ loan.book.title }}" 
+                                       target="_blank" class="text-success text-decoration-none small">Notificar</a>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>{{ loan.loan_date|date:"d/m/Y" }}</td>
+                        
+                        {# Cor do Prazo #}
+                        <td class="{% if not loan.actual_return_date and loan.return_deadline|date:'Ymd' < agora|date:'Ymd' %}text-danger fw-bold{% endif %}">
+                            {{ loan.return_deadline|date:"d/m/Y" }}
+                            {% if not loan.actual_return_date and loan.return_deadline|date:'Ymd' < agora|date:'Ymd' %}
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if loan.actual_return_date %}
+                                <span class="badge bg-success">Devolvido</span>
+                            {% elif loan.return_deadline|date:'Ymd' < agora|date:'Ymd' %}
+                                <span class="badge bg-danger">ATRASADO</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">No Prazo</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if not loan.actual_return_date %}
+                                <a href="{% url 'return_book' loan.pk %}" class="btn btn-sm btn-outline-primary">Devolver</a>
+                            {% else %}
+                                <span class="text-muted small">Finalizado</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">Nenhum empréstimo encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

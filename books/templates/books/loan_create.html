@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- 1. CSS do Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+    /* Ajustes para o Select2 combinar com o visual do Bootstrap 5 */
+    .select2-container .select2-selection--single {
+        height: 38px !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 0.375rem !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 36px !important;
+        padding-left: 12px !important;
+        color: #212529 !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+    }
+    .select2-dropdown {
+        border: 1px solid #dee2e6 !important;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+</style>
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'loan_list' %}">Empréstimos</a></li>
+            <li class="breadcrumb-item active">Novo Empréstimo</li>
+        </ol>
+    </nav>
+
+    <h2><i class="bi bi-journal-plus"></i> Registrar Novo Empréstimo</h2>
+    <hr>
+    
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        {{ form.as_p }}
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-lg"></i> Salvar Empréstimo
+                    </button>
+                    <a href="{% url 'loan_list' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Scripts: JQuery e Select2 (Necessários nesta ordem) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Ativando a busca nos campos de Livro e Usuário
+        // O Django gera os IDs baseados no nome do campo: id_nome_do_campo
+        $('#id_book').select2({
+            placeholder: "Pesquise o título do livro...",
+            allowClear: true,
+            language: {
+                noResults: function() { return "Nenhum livro encontrado"; }
+            }
+        });
+
+        $('#id_user').select2({
+            placeholder: "Pesquise o nome do usuário...",
+            allowClear: true,
+            language: {
+                noResults: function() { return "Usuário não cadastrado"; }
+            }
+        });
+    });
+</script>
+{% endblock %}
